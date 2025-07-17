@@ -1,7 +1,7 @@
 ---
 services:
   umami:
-    image: ghcr.io/umami-software/umami:postgresql-latest
+    image: uhub.service.ucloud.cn/keyleaf/keyleaf-umami:latest
     ports:
       - "3000:3000"
     environment:
@@ -14,12 +14,14 @@ services:
     init: true
     restart: always
     healthcheck:
-      test: ["CMD-SHELL", "curl http://localhost:3000/api/heartbeat"]
+      test: ["CMD-SHELL", "curl http://localhost:3000/umami/api/heartbeat"]
       interval: 5s
       timeout: 5s
       retries: 5
   db:
     image: postgres:15-alpine
+    ports:
+      - "35432:5432"
     environment:
       POSTGRES_DB: umami
       POSTGRES_USER: umami
@@ -34,3 +36,8 @@ services:
       retries: 5
 volumes:
   umami-db-data:
+    driver: local
+    driver_opts:
+      type: none
+      device: /data/docker/umami/postgresql/data
+      o: bind
